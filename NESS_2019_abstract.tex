@@ -1,0 +1,144 @@
+\documentclass{amsart}
+\begin{document}
+\title{MTH396 Spring 2019 Final}
+\maketitle
+\par\vspace{0.4 cm}\noindent
+\textbf{1)}  Suppose $X=(x_1,x_2,\ldots,x_n)$ is a random vector with expected value $\mu=(\mu_1,\mu_2,\ldots,\mu_n)$ and variance-covariance matrix 
+\[
+V = \left[v_{ij}\right]\quad i,j=1,2,\ldots,n
+\]
+Show that the variance of the sum
+\[
+U = \sum_{i-1}^nx_i
+\]
+is given by
+\[
+\sum_{i=1}^n\sum_{j=1}^nv_{ij}
+\]
+(i.e., show that the variance of $\sum x_i$ is the sum of the elements of the variance-covariance matrix $V$).
+\par\vspace{1 cm}\noindent
+\textbf{2)}  A square matrix $A$ is called \textit{idempotent} if
+\[
+A\cdot A = A
+\]
+Show that the identity matrix $I$ is idempotent.
+\par\vspace{1 cm}\noindent
+\textbf{3)}  Show that the matrix
+\[
+\frac{1}{n}J = \frac{1}{n}\left[\begin{array}{cccc}1&1&\cdots&1\\1&\ddots&&1\\\vdots&&\ddots&\vdots\\1&1&\cdots&1\end{array}\right]
+\]
+is idempotent.
+\par\vspace{1 cm}\noindent
+\textbf{4)}  Show that the matrix 
+\[
+I-\frac{1}{n}J
+\]
+is idempotent.
+\par\vspace{1 cm}\noindent
+\textbf{4)}  With the same setting as problems 1) and 2), show that
+\[
+\sum_{i=1}^n(x_i-\overline{x})^2 = X'\left(I-\frac{1}{n}J\right)X\quad\mbox{where}\quad \overline{x}=\frac{1}{n}\sum_{i=1}^n x_i
+\vspace{0.5 cm}
+\]
+Note: $I-\frac{1}{n}J$ can be written as:
+\[
+I-\frac{1}{n}J = \left[\begin{array}{rrrrr}
+1-\frac{1}{n} &-\frac{1}{n}  &-\frac{1}{n}  &\cdots &-\frac{1}{n}\\
+-\frac{1}{n}  &1-\frac{1}{n} &-\frac{1}{n}  &\cdots &-\frac{1}{n}\\
+-\frac{1}{n}  &-\frac{1}{n}  &1-\frac{1}{n} &\cdots &-\frac{1}{n}\\
+\vdots        &\vdots        &\vdots        &\ddots &\vdots\\
+-\frac{1}{n}&-\frac{1}{n}&-\frac{1}{n} &\cdots&1-\frac{1}{n}
+\end{array}\right]
+\]
+\par\vspace{1 cm}\noindent
+\textbf{5)}  Show that if $X$ is a random variable whose expected value $E(X)$ exists and $C$ is a constant, then
+\[
+E(C+X) = C+E(X)
+\vspace{0.4 cm}
+\]
+(You should consider the cases of discrete and continuous random variables separately)
+\par\vspace{1 cm}\noindent
+\textbf{6)}  Show that if $X_1$ and $X_2$ are vectors of random variables and $t$ is a vector of constants
+\[
+X_1 = \left[\begin{array}{c}X_{11}\\X_{12}\\\vdots\\X_{1n}\end{array}\right]\quad
+X_2 = \left[\begin{array}{c}X_{21}\\X_{22}\\\vdots\\X_{2n}\end{array}\right]\quad
+\mbox{and}\quad t = \left[\begin{array}{c}t_1\\t_2\\\vdots\\t_n\end{array}\right]
+\vspace{0.5 cm}
+\]
+with
+\[
+E(X_1) = \mu_1 = \left[\begin{array}{c}\mu_1\\\mu_1\\\vdots\\\mu_1\end{array}\right]\quad\mbox{and}\quad E(X_2) = \mu_2 = \left[\begin{array}{c}\mu_2\\\mu_2\\\vdots\\\mu_2\end{array}\right]
+\]
+then
+\[
+E[t'(X_1+X_2)] = t'\mu_1 + t'\mu_2
+\]
+\par\vspace{1 cm}\noindent
+\textbf{7)}  Show that if $X$ is a vector of random variables, $C$ is a vector of constants, and $t$ is a vector of constants
+\[
+X = \left[\begin{array}{c}X_{1}\\X_{2}\\\vdots\\X_{n}\end{array}\right]\quad
+C = \left[\begin{array}{c}C_{1}\\C_{2}\\\vdots\\C_{n}\end{array}\right]\quad
+\mbox{and}\quad t = \left[\begin{array}{c}t_1\\t_2\\\vdots\\t_n\end{array}\right]
+\vspace{0.5 cm}
+\]
+with
+\[
+E(X) = \mu = \left[\begin{array}{c}\mu\\\mu\\\vdots\\\mu\end{array}\right]
+\]
+then
+\[
+E[t'(X+C)] = t'\mu + t'C
+\]
+\par\vspace{1 cm}\noindent
+\textbf{8)}  A \textbf{linear model} is a mathematical model of the form
+\[
+Y = X\beta + e
+\]
+where $Y$ is an $N\times1$ vector of observed measurements, $X$ is an $N\times m$ matrix of predictors called the \textbf{design matrix}, $\beta$ is an $m\times1$ vector of coefficients, and $e$ is a random vector of error terms, usually assumed to be IID Gaussian with mean zero and standard deviation $\sigma_e$, that is, $e_1\sim N(0,\sigma_e)$.
+\par\vspace{0.4 cm}
+Show that if we treat the elements of $X$ and $\beta$ as constants, with the usual assumptions on $e$,
+\[
+E(Y) = X\beta
+\]
+\par\vspace{1 cm}\noindent
+\textbf{9)} The \textbf{Ordinary Least Squares} (OLS) estimates $\hat{\beta}$ of $\beta$ satisfy the so-called \textbf{normal equations}:
+\[
+X'X\hat{\beta} = X'Y 
+\]
+\par\vspace{0.4 cm}
+In the special case where the columns of $X$ are independent, $(X'X)$ is nonsingular and we can write an explicit expression for the OLS estimates:
+\[
+\hat{\beta} = (X'X)^{-1}X'Y
+\vspace{0.4 cm}
+\] 
+Show that $\hat{\beta}$ is an unbiased estimate of $\beta$. (Hint: Note that $\hat{\beta}$ is a linear combination of the elements of $Y$ so we can use the fact that $E(t'Y) = t'\mu = t'E(Y)$.  In this case $t$ will be a matrix, and we have previously determined $E(Y)$ for a linear model $Y=X\beta+e$.) 
+\par\vspace{1 cm}\noindent
+\textbf{10)} A square $n\times n$ matrix $M = \{m_{ij}\}$ is said to be \textbf{symmetric} if $m_{i,j}=m_{j,i}$ for $i,j=1,2,\ldots,n$.  Show that if $X$ is an $N\times n$ matrix, the $n\times n$ matrix $(X'X)$ is symmetric.  (Hint: consider the fact that $m_{ij}$ is the dot product of the $i^{th}$ and $j^{th}$ columns of $X$).  
+
+\par\vspace{1 cm}\noindent
+\textbf{11)} Once again assuming that the columns of the design matrix $X$ are linearly independent, show that with the usual assumptions on $e$, the variance-covariance matrix of the vector of OLS estimates $\hat{\beta}$ is:
+\[
+V(\hat{\beta}) = \sigma^2_e(X'X)^{-1} 
+\vspace{0.4 cm}
+\]
+(Hint: Use the fact that $V(Y) = V(X\beta+e) = V(e) = \sigma^2_eI$ together with the formula $V(t'Y) = t'V(Y)t)$.
+
+\par\vspace{1 cm}\noindent
+\textbf{12}  Suppose $X=(X_1,X_2,\ldots,X_n)$ is a random sample from a negative binomial distribution with $r=3$ and probability of success $p$.  Show that
+\[
+\sum_{i=1}^nx_i
+\]
+is a sufficient statistic for $p$.  You may assume the probability mass function is:
+\[
+P(X=x) = {x+r-1\choose x}(1-p)^rp^x\quad x=0,1,2,\ldots
+\]
+\par\vspace{1 cm}\noindent
+\textbf{13}  A continuous \textbf{single-parameter exponential family} with parameter $\theta$ is a set of probability distributions whose probability density functions can be expressed in the form
+\[
+f(x|\theta) = h(x)\cdot\exp[\eta(\theta)\cdot T(x)-A(\theta)]
+\vspace{0.4 cm}
+\]
+where $T(x),h(x),\eta(\theta)$,and $A(\theta)$ are known functions. Show that $T(x)$ is a sufficient statistic for $\theta$.
+\par\vspace{1 cm}\noindent
+\textbf{14}  Suppose $X=(X_1,X_2,\ldots,X_n)$ is a random sample from a gamma distribution with a know value for $\alpha$.  What is the maximum likeilihood estimate of $\beta$, $\hat{\beta}_{MLE}$? 
+\end{document}
