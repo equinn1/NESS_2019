@@ -9,7 +9,7 @@ data {
   int<lower=0, upper=1> y[K,N];   // correctness for n
 }
 parameters {
-  matrix[K,J] theta;            // abilities
+  vector[J] theta [K];          // abilities
   vector[2] xi[I];              // alpha/beta pair vectors
   vector[2] mu;                 // vector for alpha/beta means
   vector<lower=0>[2] tau;       // vector for alpha/beta residual sds

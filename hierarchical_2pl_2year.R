@@ -5,15 +5,26 @@ options(mc.cores = parallel::detectCores())
 library(ggplot2)
 
 # Set paramters for the simulated data
-I <- 34  #<- 20
-J <- 200 #<- 1000
-mu <- c(0, 0)
-tau <- c(0.25, 1)
-Omega <- matrix(c(1, 0.3, 0.3, 1), ncol = 2)
+I <- 34  # questions
+J <- 200 # students
+K <- 2   # years
+
+#means and variance-covariance matrix for IRT parameters
+mu <- rep(c(0, 0),K)
+tau <- rep(c(0.25, 1),K)
+variance_block <- matrix(c(1, 0.3, 0.3, 1), ncol = 2)
+Omega <- matrix(rep(0,4*K^2),nrow=K*2)
+
+Omega
+
+Omega[1:2,1:2] <- variance_block
+Omega[3:4,3:4] <- variance_block
+
+Omega
 
 # Calculate or sample remaining paramters
 Sigma <- tau %*% t(tau) * Omega
-xi <- MASS::mvrnorm(I, c(0, 0), Sigma)
+xi <- MASS::mvrnorm(I, rep(0,2*K), Sigma)
 alpha <- exp(mu[1] + as.vector(xi[, 1]))
 beta <- as.vector(mu[2] + xi[, 2])
 theta <- rnorm(J, mean = 0, sd = 1)
