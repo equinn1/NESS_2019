@@ -6,7 +6,7 @@ data {
   int<lower=1, upper=I> ii[N];  // item for n
   int<lower=1, upper=J> jj[N];  // person for n
   int<lower=1, upper=K> kk[N];  // year for n
-  int<lower=0, upper=1> y[K,N];   // correctness for n
+  int<lower=0, upper=1> y[N];   // correctness for n
 }
 parameters {
   vector[J] theta [K];          // abilities

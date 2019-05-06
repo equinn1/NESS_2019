@@ -3,11 +3,16 @@ library(rstan)
 rstan_options(auto_write = TRUE)
 options(mc.cores = parallel::detectCores())
 library(ggplot2)
+library(mvtnorm)
+
+set.seed(12345)
 
 # Set paramters for the simulated data
 I <- 34  # questions
-J <- 200 # students
+J <- 100 # students
 K <- 2   # years
+N <- I*J*K  # item responses
+NQ <- K*I   #unique questions
 
 #means and variance-covariance matrix for IRT parameters
 mu <- rep(c(0, 0),K)
@@ -15,29 +20,49 @@ tau <- rep(c(0.25, 1),K)
 variance_block <- matrix(c(1, 0.3, 0.3, 1), ncol = 2)
 Omega <- matrix(rep(0,4*K^2),nrow=K*2)
 
-Omega
-
-Omega[1:2,1:2] <- variance_block
-Omega[3:4,3:4] <- variance_block
-
-Omega
+for (k in 1:K){
+  Omega[(2*k-1):(2*k),(2*k-1):(2*k)] <- variance_block
+}
 
 # Calculate or sample remaining paramters
 Sigma <- tau %*% t(tau) * Omega
 xi <- MASS::mvrnorm(I, rep(0,2*K), Sigma)
-alpha <- exp(mu[1] + as.vector(xi[, 1]))
-beta <- as.vector(mu[2] + xi[, 2])
-theta <- rnorm(J, mean = 0, sd = 1)
+alpha=numeric()
+beta= numeric()
+for (i in seq(1,K)){
+  alpha=c(alpha,exp(mu[(2*i-1)] + as.vector(xi[, (2*i-1)])))
+  beta =c(beta,beta <- as.vector(mu[(2*i)] + xi[, (2*i)]))
+}
+
+theta_rho = -1/2 + runif(J)
+
+theta_m = matrix(rep(0,J*K),nrow=J)
+theta_m
+for (i in seq(1:J)){
+  theta_sigma = matrix(c(1,theta_rho[i],theta_rho[i],1),nrow=2)
+  theta_m[i,] = rmvnorm(1,mean=rep(0,K),sigma=theta_sigma)
+}
 
 # Assemble data and simulate response
-data_list <- list(I = I, J = J, N = I * J, ii = rep(1:I, times = J), jj = rep(1:J, 
-                                                                              each = I))
-eta <- alpha[data_list$ii] * (theta[data_list$jj] - beta[data_list$ii])
-data_list$y <- as.numeric(boot::inv.logit(eta) > runif(data_list$N))
+ii = rep(1:(I*K), times=J)              #column of item numbers
+jj = rep(1:J,each=(2*I))                #column of student numbers
+kk = rep(rep(1:K,each=I),times=J)       #column of year numbers
+
+eta=rep(0,N)                            # a(theta-b)
+y = rep(0,N)                            # question responses
+
+for (i in 1:N){
+  eta[i] <- alpha[ii[i]] * (theta_m[jj[i],kk[i]] - beta[ii[i]])
+  y[i] <- as.numeric(boot::inv.logit(eta[i]) > runif(1))  
+}
+
+data_list <- list(I=NQ,J=J, K=K, N=N, y=y)
 
 # Fit model to simulated data
-sim_fit <- stan(file = "hierarchical_2pl.stan", data = data_list, chains = 4, 
+sim_fit <- stan(file = "hierarchical_2pl.stan", data=data_list, chains = 4, 
                 iter = 4000)
+
+summary(sim_fit)
 
 library(shinystan)
 
@@ -68,34 +93,3 @@ ggplot(sim_df) + aes(x = parameter, y = middle, ymin = lower, ymax = upper) +
   scale_x_discrete() + geom_abline(intercept = 0, slope = 0, color = "white") + 
   geom_linerange() + geom_point(size = 2) + labs(y = "Discrepancy", x = NULL) + 
   theme(panel.grid = element_blank()) + coord_flip()
-
-# Use data and scoring function from the mirt package
-library(mirt)
-sat <- key2binary(SAT12, key = c(1, 4, 5, 2, 3, 1, 2, 1, 3, 1, 2, 4, 2, 1, 5, 
-                                 3, 4, 4, 1, 4, 3, 3, 4, 1, 3, 5, 1, 3, 1, 5, 4, 5))
-
-# Assemble data list and fit model
-sat_list <- list(I = ncol(sat), J = nrow(sat), N = length(sat), ii = rep(1:ncol(sat), 
-                                                                         each = nrow(sat)), jj = rep(1:nrow(sat), times = ncol(sat)), y = as.vector(sat))
-sat_fit <- stan(file = "hierarchical_2pl.stan", data = sat_list, chains = 4, 
-                iter = 500)
-
-ex_summary <- as.data.frame(summary(sat_fit)[[1]])
-ex_summary$Parameter <- as.factor(gsub("\\[.*]", "", rownames(ex_summary)))
-ggplot(ex_summary) + aes(x = Parameter, y = Rhat, color = Parameter) + geom_jitter(height = 0, 
-                              width = 0.5, show.legend = FALSE) + ylab(expression(hat(italic(R))))
-
-# View table of parameter posteriors
-print(sat_fit, pars = c("alpha", "beta", "mu", "tau", "Omega[1,2]"))
-
-# Assesmble a data frame of item parameter estimates and pass to ggplot
-ab_df <- data.frame(Discrimination = ex_summary[paste0("alpha[", 1:sat_list$I, 
-                    "]"), "mean"], Difficulty = ex_summary[paste0("beta[", 1:sat_list$I, "]"), 
-                    "mean"], parameterization = "alpha & beta")
-xi_df <- data.frame(Discrimination = ex_summary[paste0("xi[", 1:sat_list$I, 
-                    ",1]"), "mean"], Difficulty = ex_summary[paste0("xi[", 1:sat_list$I, ",2]"), 
-                    "mean"], parameterization = "xi")
-full_df <- rbind(ab_df, xi_df)
-ggplot(full_df) + aes(x = Difficulty, y = Discrimination) + geom_point() + facet_wrap(~parameterization, 
-                                                                  scales = "free")
-
