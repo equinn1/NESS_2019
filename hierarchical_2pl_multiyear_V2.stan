@@ -12,10 +12,10 @@ parameters {
   vector[2] xi[I];              // alpha/beta pair vectors
   vector[2] mu;                 // vector for alpha/beta means
   vector<lower=0>[2] tau;       // vector for alpha/beta residual sds
-  cholesky_factor_corr[2] L_Omega;
+  cholesky_factor_corr[2] L_ab_Rho;
   vector[K] zi[J];              // theta vectors
   vector[K] mu_theta [J];       // vector for theta means
-  vector<lower=0>[2] phi[J];    // vector for theta variances
+  vector<lower=0>[2] sigma_theta[J];    // vector for theta variances
   cholesky_factor_corr[K] L_theta; 
 }
 transformed parameters {
@@ -33,21 +33,18 @@ transformed parameters {
   }
 }
 model {
-  matrix[2,2] L_Sigma;
-  L_Sigma = diag_pre_multiply(tau, L_Omega); // covariance matrix
+  matrix[2,2] L_ab_Sigma;
+  matrix[K,K] L_theta_sigma;
+  
+  L_ab_Sigma = diag_pre_multiply(tau, L_ab_Rho); // covariance matrix of a,b
   for (i in 1:I)
-    xi[i] ~ multi_normal_cholesky(mu, L_Sigma);
-  for (i in 1:K)
-    for (j in 1:J)
-      theta[i,j] ~ normal(0, 1);
-  L_Omega ~ lkj_corr_cholesky(4);
-  mu[1] ~ normal(0,1);
-  tau[1] ~ exponential(.1);
-  mu[2] ~ normal(0,5);
-  tau[2] ~ exponential(.1);
+    xi[i] ~ multi_normal_cholesky(mu, L_ab_Sigma);
+  L_ab_Rho ~ lkj_corr_cholesky(4);
+  tau ~ exponential(.1);
+  
   y ~ bernoulli_logit(alpha[ii] .* ( - beta[ii]));
 }
 generated quantities {
   corr_matrix[2] Omega;
-  Omega = multiply_lower_tri_self_transpose(L_Omega);
+  Omega = multiply_lower_tri_self_transpose(L_ab_Rho);
 }
