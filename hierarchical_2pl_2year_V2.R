@@ -59,8 +59,8 @@ for (i in 1:N){
 data_list <- list(I=NQ,J=J, K=K, N=N, y=y)
 
 # Fit model to simulated data
-sim_fit <- stan(file = "hierarchical_2pl.stan", data=data_list, chains = 4, 
-                iter = 4000)
+sim_fit <- stan(file = "hierarchical_2pl_multiyear_V2.stan", data=data_list, chains = 1, 
+                iter = 500)
 
 summary(sim_fit)
 
