@@ -61,8 +61,8 @@ LKJF = 5
 data_list <- list(I=I,J=J, K=K, N=N, y=y, LKJF=LKJF)
 
 # Fit model to simulated data
-sim_fit <- stan(file = "hierarchical_2pl_multiyear_V3.stan", data=data_list, chains = 4, 
-                iter = 4000)
+sim_fit <- stan(file = "hierarchical_2pl_multiyear_V4_local.stan", data=data_list, chains = 2, 
+                iter = 500)
 
 summary(sim_fit)
 
