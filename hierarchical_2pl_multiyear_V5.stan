@@ -3,7 +3,8 @@ data {
   int<lower=1> J;               // # persons
   int<lower=1> N;               // # observations
   int<lower=1> K;               // # years
-  int<lower=0> LKJF;            // #parameter for LKJ distribution 
+  int<lower=0> LKJF1;            // #parameter for LKJ distribution 
+  int<lower=0> LKJF2;            // #parameter for LKJ distribution 
   int<lower=1, upper=I> ii[N];  // item for n
   int<lower=1, upper=J> jj[N];  // person for n
   int<lower=1, upper=K> kk[N];  // year for n
@@ -24,8 +25,8 @@ parameters {
   cholesky_factor_corr[2] L_ab_Rho;
   
   vector[K] zi[J];                    // theta vectors
-  vector[K] mu_theta[J];                   // vector for theta means
-  vector<lower=0>[K] sigma_theta[J];       // vector for theta variances
+  vector[K] mu_theta;                   // vector for theta means
+  vector<lower=0>[K] sigma_theta;       // vector for theta variances
   cholesky_factor_corr[K] L_theta_Rho;  
 }
 transformed parameters {
@@ -59,22 +60,22 @@ transformed parameters {
 }
 model {
   matrix[2,2] L_ab_Sigma;
-  matrix[K,K] L_theta_Sigma[J];
+  matrix[K,K] L_theta_Sigma;
   
   L_ab_Sigma = diag_pre_multiply(tau, L_ab_Rho); // covariance matrix of a,b
   for (i in 1:I)
     xi[i] ~ multi_normal_cholesky(mu, L_ab_Sigma);
-  L_ab_Rho ~ lkj_corr_cholesky(1);
-  tau ~ exponential(1);
+  L_ab_Rho ~ lkj_corr_cholesky(LKJF1);
+  tau ~ cauchy(0,1);
+  mu ~ normal(0,1);
   
-  L_theta_Rho ~ lkj_corr_cholesky(LKJF);
-  for (j in 1:J) {
-    L_theta_Sigma[j] = diag_pre_multiply(sigma_theta[j], L_theta_Rho);    
-    zi[j] ~ multi_normal_cholesky(mu_theta[j], L_theta_Sigma[j]);  
-
-    sigma_theta[j] ~ exponential(1);
-    mu_theta[j] ~ normal(0,1);
-  }
+  sigma_theta ~ cauchy(0,1);
+  mu_theta ~ normal(0,1);
+  
+  L_theta_Sigma = diag_pre_multiply(sigma_theta, L_theta_Rho);    
+  for (j in 1:J) 
+    zi[j] ~ multi_normal_cholesky(mu_theta, L_theta_Sigma);  
+  L_theta_Rho ~ lkj_corr_cholesky(LKJF2);
 
   y ~ bernoulli_logit(xalpha .* (xtheta - xbeta));
 }

@@ -10,7 +10,7 @@ set.seed(12345)
 
 # Set paramters for the simulated data
 I <- 34  # questions
-J <- 10 # students
+J <- 40 # students
 K <- 2   # years
 N <- I*J*K  # item responses
 
@@ -34,7 +34,7 @@ for (i in seq(1,K)){
   beta =c(beta,beta <- as.vector(mu[(2*i)] + xi[, (2*i)]))
 }
 
-theta_rho = -1/2 + runif(J)
+theta_rho = runif(J,-0.25,0.25)
 
 theta_m = matrix(rep(0,J*K),nrow=J)
 theta_m
@@ -56,19 +56,20 @@ for (i in 1:N){
   y[i] <- as.numeric(boot::inv.logit(eta[i]) > runif(1))  
 }
 
-LKJF = 4
+LKJF1 = 6
+LKJF2 = 2
 
-data_list <- list(I=I,J=J, K=K, N=N, y=y, LKJF=LKJF)
+data_list <- list(I=I,J=J, K=K, N=N, y=y, LKJF1=LKJF1, LKJF2=LKJF2)
 
 # Fit model to simulated data
-sim_fit <- stan(file = "hierarchical_2pl_multiyear_V4_local.stan", data=data_list, chains = 2, 
-                iter = 4000)
+sim_fit <- stan(file = "hierarchical_2pl_multiyear_V5_local.stan", data=data_list, chains = 4, 
+                iter = 4000,control = list(max_treedepth = 12))
 
 summary(sim_fit)
 
 pd <- extract(sim_fit)
 
-k=22
+k=4
 mean(pd$zi[,k,1])
 mean(pd$zi[,k,2])
 cov(pd$zi[,k,])
