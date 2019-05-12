@@ -9,8 +9,8 @@ library(mvtnorm)
 set.seed(12345)
 
 # Set paramters for the simulated data
-I <- 10  # questions
-J <- 20 # students
+I <- 34  # questions
+J <- 100 # students
 K <- 2   # years
 N <- I*J*K  # item responses
 
@@ -57,13 +57,13 @@ for (i in 1:N){
 }
 
 LKJF1 = 4   #parameters for LKJ priors
-LKJF2 = 1
+LKJF2 = 20
 
 data_list <- list(I=I,J=J, K=K, N=N, y=y, LKJF1=LKJF1, LKJF2=LKJF2)
 
 # Fit model to simulated data
-sim_fit <- stan(file = "hierarchical_2pl_2year_V6.stan", data=data_list, chains = 4, 
-                iter = 4000,control = list(max_treedepth = 15,adapt_delta = 0.9))
+sim_fit <- stan(file = "hierarchical_2pl_2year_V7_local.stan", data=data_list, chains = 4, 
+                iter = 4000,control = list(max_treedepth = 12,adapt_delta = 0.95))
 
 summary(sim_fit)
 
@@ -71,10 +71,10 @@ pairs(sim_fit)
 
 pd <- extract(sim_fit)
 
-k=4
-mean(pd$zi[,k,1])
-mean(pd$zi[,k,2])
-cov(pd$zi[,k,])
+k=3
+mean(pd$mu_theta[,k,1])
+mean(pd$mu_theta[,k,2])
+cov(pd$mu_theta[,k,])
 
 library(shinystan)
 

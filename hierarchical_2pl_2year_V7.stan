@@ -25,14 +25,27 @@ parameters {
   cholesky_factor_corr[2] L_ab;
   
   vector[K] zi[J];                    // theta vectors
-  vector[K] mu_theta;                   // vector for theta means
+  vector[K] mu_theta[J];                   // vector for theta means
   vector<lower=0>[K] sigma_theta;       // vector for theta variances
-  cholesky_factor_corr[K] L_theta;  
+//  vector[J] L_theta_rho[K,K];  
+  real<lower=0,upper=1> rho_beta[J];
 }
 transformed parameters {
   vector[N] xtheta;
   vector[N] xbeta;
   vector[N] xalpha;
+  matrix[K,K] L_theta_Sigma[J];
+  real<lower=-1,upper=1> rho[J];
+  
+  for (j in 1:J) {
+    for (k in 1:K) {
+      L_theta_Sigma[j][k,k] = 1.0;
+    }
+    rho[j] = 1.0*(rho_beta[j]-0.5);
+    L_theta_Sigma[j][1,2] = rho[j];
+    L_theta_Sigma[j][2,1] = rho[j];
+  }
+  
   {
     int ix=0;
 
@@ -60,7 +73,9 @@ transformed parameters {
 }
 model {
   matrix[2,2] L_ab_Sigma;
-  matrix[K,K] L_theta_Sigma;
+  matrix[K,K] L_theta_Cholesky[J];
+  
+  rho_beta ~ beta(LKJF2,LKJF2);
   
   L_ab_Sigma = diag_pre_multiply(tau, L_ab); // covariance matrix of a,b
   for (i in 1:I)
@@ -70,12 +85,15 @@ model {
   mu ~ normal(0,1);
   
   sigma_theta ~ normal(1,0.4);
-  mu_theta ~ normal(0,1);
   
-  L_theta_Sigma = diag_pre_multiply(sigma_theta, L_theta);    
+  for (j in 1:J)
+    mu_theta[j] ~ normal(0,1);
+  
   for (j in 1:J) 
-    zi[j] ~ multi_normal_cholesky(mu_theta, L_theta_Sigma);  
-  L_theta ~ lkj_corr_cholesky(LKJF2);
+    L_theta_Cholesky[j] = cholesky_decompose(L_theta_Sigma[j]);
+    
+  for (j in 1:J)
+    zi[j] ~ multi_normal_cholesky(mu_theta[j], L_theta_Cholesky[j]);  
 
   y ~ bernoulli_logit(xalpha .* (xtheta - xbeta));
 }
