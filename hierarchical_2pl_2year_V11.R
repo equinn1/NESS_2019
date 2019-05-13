@@ -10,7 +10,7 @@ set.seed(12345)
 
 # Set paramters for the simulated data
 I <- 54  # questions
-J <- 100 # students
+J <- 200 # students
 K <- 2   # years
 N <- I*J*K  # item responses
 

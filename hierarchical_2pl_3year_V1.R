@@ -9,8 +9,8 @@ library(mvtnorm)
 set.seed(12345)
 
 # Set paramters for the simulated data
-I <- 34  # questions
-J <- 200 # students
+I <- 54  # questions
+J <- 300 # students
 K <- 3   # years
 N <- I*J*K  # item responses
 
@@ -85,9 +85,7 @@ theta2a <- theta_m[,2]
 theta3a <- theta_m[,3]
 
 tdf = data.frame(theta1,theta1a,theta2,theta2a,theta3,theta3a)
-cov(pd$mu_theta[,k,])
 
-xx = pd$mu_theta[,,1]
 
 library(shinystan)
 

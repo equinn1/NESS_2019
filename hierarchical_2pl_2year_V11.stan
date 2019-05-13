@@ -75,5 +75,9 @@ model {
 }
 generated quantities {
   corr_matrix[2] Omega;
+  corr_matrix[K] Rho[J];
   Omega = multiply_lower_tri_self_transpose(L_ab);
+  for (j in 1:J)
+    Rho[j] = multiply_lower_tri_self_transpose(L_theta[j]);
+
 }
