@@ -61,13 +61,16 @@ LKJ_eta2 = 25
 
 data_list <- list(I=I,J=J, K=K, N=N, y=y, LKJ_eta1=LKJ_eta1, LKJ_eta2=LKJ_eta2)
 
+dump(c("I","J","K","N","LKJ_eta1","LKJ_eta2","y","ii","jj","kk"),
+     file="hierarchical_2pl_2year_data.R")
+
 # Fit model to simulated data
 sim_fit <- stan(file = "hierarchical_2pl_2year_V11.stan", data=data_list, chains = 4, 
                 iter = 1000,control = list(max_treedepth = 12,adapt_delta = 0.8))
 
-summary(sim_fit)
+#summary(sim_fit)
 
-pairs(sim_fit)
+#pairs(sim_fit)
 
 pd <- extract(sim_fit)
 
@@ -82,6 +85,10 @@ theta1a <- theta_m[,1]
 theta2a <- theta_m[,2]
 
 tdf = data.frame(theta1,theta1a,theta2,theta2a)
+
+save(tdf,file="hierarchical_2pl_2year_V11.Rdata")
+write.csv(tdf,file="hierarchical_2pl_2year_V11.csv")
+save(sim_fit,file="hierarchical_2pl_2year_V11_sim_fit.Rdata")
 
 library(shinystan)
 
